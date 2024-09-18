@@ -1,0 +1,52 @@
+body {
+  height: 100vh;
+  margin: 0 auto;
+  text-align: center;
+}
+
+#root {
+  height: 100%;
+}
+
+.rs-container {
+  height: 100%;
+
+  .rs-stack {
+    height: 100%;
+  }
+}
+
+header {
+  padding: 10px;
+  background-color: var(--rs-secondary-500) !important;
+  color: var(--rs-primary-50) !important;
+}
+
+main {
+  padding: 10px;
+  height: 100%;
+}
+
+:root {
+  --rs-primary-50: #f2fffa;
+  --rs-primary-100: #b6dbce;
+  --rs-primary-200: #82b8a5;
+  --rs-primary-300: #579480;
+  --rs-primary-400: #35705d;
+  --rs-primary-500: #1b4d3e;
+  --rs-primary-600: #134738;
+  --rs-primary-700: #0b4032;
+  --rs-primary-800: #053b2d;
+  --rs-primary-900: #003327;
+
+  --rs-secondary-50: #f2f8ff;
+  --rs-secondary-100: #b8d0f2;
+  --rs-secondary-200: #81a8e3;
+  --rs-secondary-300: #5184d6;
+  --rs-secondary-400: #2661c7;
+  --rs-secondary-500: #0041ba;
+  --rs-secondary-600: #003bb3;
+  --rs-secondary-700: #0034a3;
+  --rs-secondary-800: #002a8c;
+  --rs-secondary-900: #001f6e;
+}
