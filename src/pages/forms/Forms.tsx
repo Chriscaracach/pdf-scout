@@ -8,7 +8,15 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { redirect, useNavigate } from "react-router-dom";
-import { Button, Heading, IconButton, List, Stack, VStack } from "rsuite";
+import {
+  Button,
+  Heading,
+  IconButton,
+  List,
+  Loader,
+  Stack,
+  VStack,
+} from "rsuite";
 
 import ArowBackIcon from "@rsuite/icons/ArowBack";
 
@@ -20,14 +28,17 @@ const db = getFirestore(app);
 
 const Forms = () => {
   const [forms, setForms] = useState<DocumentData[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
   const fetchForms = async () => {
+    setLoading(true);
     const formsCollection = collection(db, "forms");
     const formsSnapshot = await getDocs(formsCollection);
     const formsList = formsSnapshot.docs.map((doc) => doc.data());
     setForms(formsList);
+    setLoading(false);
   };
 
   const addNewForm = async () => {
@@ -61,13 +72,22 @@ const Forms = () => {
           />
         </Stack.Item>
         <Heading>Formularios creados</Heading>
-        <List bordered hover>
-          {forms.map((form, index) => (
-            <List.Item key={index}>
-              <FormCard form={form} />
-            </List.Item>
-          ))}
-        </List>
+        {loading ? (
+          <Loader
+            center
+            vertical
+            size="lg"
+            content="Cargando formularios creados"
+          />
+        ) : (
+          <List bordered hover>
+            {forms.map((form, index) => (
+              <List.Item key={index}>
+                <FormCard form={form} />
+              </List.Item>
+            ))}
+          </List>
+        )}
       </VStack>
       <Button appearance="primary" size="lg" onClick={addNewForm}>
         Crear Formulario

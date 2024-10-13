@@ -23,3 +23,12 @@ export interface FormValues {
   gpDist: string;
   gpZone: string;
 }
+
+export interface FormField {
+  name: string;
+  label: string;
+  type?: string;
+  component: string;
+  options?: { label: string; value: string }[];
+  placeholder: string;
+}

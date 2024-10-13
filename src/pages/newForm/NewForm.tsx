@@ -9,8 +9,17 @@ import { useNavigate } from "react-router-dom";
 
 import * as Yup from "yup";
 import { auth, db } from "../../firebase/config";
+import { FormField } from "../../interfaces/Form";
 
-const forms = {
+type FormConfig = {
+  label: string;
+  value: string;
+  fields: FormField[];
+  initialValues: Record<string, string>;
+  validationSchema: Yup.ObjectSchema<any>;
+};
+
+const forms: Record<string, FormConfig> = {
   autorizacionAcampe: {
     label: "Autorización de Acampe",
     value: "autorizacionAcampe",
@@ -78,7 +87,6 @@ const forms = {
       gpNum: "1600",
       gpName: "Guido Buffo",
       gpDist: "2",
-      gpZone: "42",
     },
     validationSchema: Yup.object().shape({
       type: Yup.string().required("El tipo es requerido"),
@@ -94,20 +102,19 @@ const forms = {
 };
 
 const NewForm = () => {
-  const [step, setStep] = useState("pickForm");
+  const [step, setStep] = useState<"pickForm" | "prefillForm">("pickForm");
   const [pickedForm, setPickedForm] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (values: any) => {
+    setLoading(true);
     try {
       const user = auth.currentUser;
       if (!user) {
         throw new Error("User not authenticated");
       }
-
-      console.log(user);
-
       await addDoc(collection(db, "forms"), {
         formValues: values,
         creator: { id: user.uid, name: user.displayName, photo: user.photoURL },
@@ -115,14 +122,14 @@ const NewForm = () => {
         createdAt: new Date(),
         id: uuidv4(),
       });
-
       navigate("/forms");
     } catch (error) {
       console.error("Error submitting form: ", error);
     }
+    setLoading(false);
   };
 
-  const steps = {
+  const steps: Record<"pickForm" | "prefillForm", JSX.Element | null> = {
     pickForm: (
       <VStack alignItems="stretch">
         <Heading level={5}>Seleccioná un formulario</Heading>
@@ -150,6 +157,7 @@ const NewForm = () => {
         initialValues={forms[pickedForm].initialValues}
         validationSchema={forms[pickedForm].validationSchema}
         onSubmit={handleSubmit}
+        loading={loading}
       />
     ) : null,
   };

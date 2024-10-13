@@ -2,21 +2,14 @@ import React from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, SelectPicker, DatePicker, Text, Input, VStack } from "rsuite";
-
-interface FieldProps {
-  name: string;
-  label: string;
-  type: string;
-  placeholder?: string;
-  component?: "input" | "select" | "date";
-  options?: { label: string; value: any }[]; // For SelectPicker
-}
+import { FormField } from "../../../interfaces/Form";
 
 interface FormGeneratorProps {
-  fields: FieldProps[];
+  fields: FormField[];
   initialValues: { [key: string]: any };
-  validationSchema: Yup.ObjectSchema;
+  validationSchema: Yup.ObjectSchema<{ [key: string]: any }>;
   onSubmit: (values: { [key: string]: any }) => void;
+  loading: boolean;
 }
 
 const FormGenerator: React.FC<FormGeneratorProps> = ({
@@ -24,6 +17,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
   initialValues,
   validationSchema,
   onSubmit,
+  loading,
 }) => {
   return (
     <Formik
@@ -79,7 +73,13 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
               ))}
             </VStack>
 
-            <Button appearance="primary" type="submit" block size="lg">
+            <Button
+              appearance="primary"
+              type="submit"
+              block
+              size="lg"
+              loading={loading}
+            >
               Crear
             </Button>
           </VStack>
