@@ -1,17 +1,25 @@
-import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../../firebase/config";
-import { useNavigate } from "react-router-dom";
-import { Button, Heading, IconButton, List, Stack, Text, VStack } from "rsuite";
-import TrashIcon from "@rsuite/icons/Trash";
+import { onAuthStateChanged } from "firebase/auth";
+import {
+  collection,
+  DocumentData,
+  getDocs,
+  getFirestore,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { redirect, useNavigate } from "react-router-dom";
+import { Button, Heading, IconButton, List, Stack, VStack } from "rsuite";
+
 import ArowBackIcon from "@rsuite/icons/ArowBack";
-// Initialize Firebase
+
+import { auth, firebaseConfig } from "../../firebase/config";
+import FormCard from "./components/FormCard";
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const Forms = () => {
-  const [forms, setForms] = useState<any[]>([]);
+  const [forms, setForms] = useState<DocumentData[]>([]);
 
   const navigate = useNavigate();
 
@@ -24,17 +32,17 @@ const Forms = () => {
 
   const addNewForm = async () => {
     navigate("new");
-    const newForm = {
-      /* form data */
-    };
-    try {
-      const docRef = await addDoc(collection(db, "forms"), newForm);
-      console.log("Document written with ID: ", docRef.id);
-      fetchForms(); // Refresh the list of forms
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        redirect("/login");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth]);
 
   useEffect(() => {
     fetchForms();
@@ -53,14 +61,10 @@ const Forms = () => {
           />
         </Stack.Item>
         <Heading>Formularios creados</Heading>
-        <List bordered>
-          {[{}, {}, {}].map((form, index) => (
+        <List bordered hover>
+          {forms.map((form, index) => (
             <List.Item key={index}>
-              <Stack justifyContent="space-between">
-                <Text>Test label</Text>
-                <Text>Creador</Text>
-                <IconButton icon={<TrashIcon />} appearance="subtle" />
-              </Stack>
+              <FormCard form={form} />
             </List.Item>
           ))}
         </List>

@@ -1,13 +1,15 @@
 import React from "react";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { Form as RSForm, ButtonToolbar, Button } from "rsuite";
+import { Button, SelectPicker, DatePicker, Text, Input, VStack } from "rsuite";
 
 interface FieldProps {
   name: string;
   label: string;
   type: string;
   placeholder?: string;
+  component?: "input" | "select" | "date";
+  options?: { label: string; value: any }[]; // For SelectPicker
 }
 
 interface FormGeneratorProps {
@@ -27,31 +29,60 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      onSubmit={(values) => {
+        onSubmit(values);
+      }}
     >
-      {({ errors, touched }) => (
+      {({ errors, touched, values, setFieldValue }) => (
         <Form>
-          <RSForm fluid>
-            {fields.map((field) => (
-              <RSForm.Group key={field.name}>
-                <RSForm.ControlLabel>{field.label}</RSForm.ControlLabel>
-                <Field
-                  name={field.name}
-                  type={field.type}
-                  placeholder={field.placeholder}
-                  as={RSForm.Control}
-                />
-                {errors[field.name] && touched[field.name] ? (
-                  <RSForm.HelpText>{errors[field.name]}</RSForm.HelpText>
-                ) : null}
-              </RSForm.Group>
-            ))}
-            <ButtonToolbar>
-              <Button appearance="primary" type="submit">
-                Submit
-              </Button>
-            </ButtonToolbar>
-          </RSForm>
+          <VStack alignItems="stretch" spacing={30}>
+            <VStack alignItems="stretch" spacing={10}>
+              {fields.map((field, i) => (
+                <React.Fragment key={i}>
+                  <VStack alignItems="stretch" spacing={0}>
+                    <Text as="label">{field.label}</Text>
+                    {field.component === "select" ? (
+                      <SelectPicker
+                        name={field.name}
+                        placeholder={field.placeholder}
+                        data={field.options || []}
+                        searchable={false}
+                        closable={false}
+                        block
+                        value={values[field.name]}
+                        onChange={(value) => setFieldValue(field.name, value)}
+                      />
+                    ) : field.component === "date" ? (
+                      <DatePicker
+                        name={field.name}
+                        cleanable={false}
+                        oneTap
+                        block
+                        format="dd.MM.yyyy"
+                        placeholder={field.placeholder}
+                        value={values[field.name]}
+                        onChange={(value) => setFieldValue(field.name, value)}
+                      />
+                    ) : (
+                      <Input
+                        name={field.name}
+                        placeholder={field.placeholder}
+                        value={values[field.name]}
+                        onChange={(value) => setFieldValue(field.name, value)}
+                      />
+                    )}
+                    {errors[field.name] && touched[field.name] ? (
+                      <Text color="red">{errors[field.name]}</Text>
+                    ) : null}
+                  </VStack>
+                </React.Fragment>
+              ))}
+            </VStack>
+
+            <Button appearance="primary" type="submit" block size="lg">
+              Crear
+            </Button>
+          </VStack>
         </Form>
       )}
     </Formik>
