@@ -25,7 +25,7 @@ const Login = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsAuthenticated(true);
-        navigate("/forms");
+        navigate("/ed/forms");
       } else {
         setIsAuthenticated(false);
       }
@@ -51,7 +51,7 @@ const Login = () => {
   };
 
   if (isAuthenticated) {
-    navigate("/forms");
+    navigate("/ed/forms");
   }
 
   return (

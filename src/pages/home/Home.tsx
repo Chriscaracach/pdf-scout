@@ -10,7 +10,7 @@ const Home = () => {
         size="lg"
         block
         onClick={() => {
-          Navigate("login");
+          Navigate("ed/login");
         }}
       >
         Crear formulario(Educadores)
@@ -20,7 +20,7 @@ const Home = () => {
         size="lg"
         block
         onClick={() => {
-          Navigate("forms");
+          Navigate("ed/forms");
         }}
       >
         Llenar formulario

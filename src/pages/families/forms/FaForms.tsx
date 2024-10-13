@@ -1,5 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { onAuthStateChanged } from "firebase/auth";
 import {
   collection,
   DocumentData,
@@ -7,7 +6,7 @@ import {
   getFirestore,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Heading,
@@ -20,13 +19,13 @@ import {
 
 import ArowBackIcon from "@rsuite/icons/ArowBack";
 
-import { auth, firebaseConfig } from "../../firebase/config";
-import FormCard from "./components/FormCard";
+import FaFormCard from "./components/FaFormCard";
+import { firebaseConfig } from "../../../firebase/config";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const Forms = () => {
+const FaForms = () => {
   const [forms, setForms] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -40,16 +39,6 @@ const Forms = () => {
     setForms(formsList);
     setLoading(false);
   };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        redirect("/login");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [auth]);
 
   useEffect(() => {
     fetchForms();
@@ -79,7 +68,7 @@ const Forms = () => {
           <List bordered hover>
             {forms.map((form, index) => (
               <List.Item key={index}>
-                <FormCard form={form} />
+                <FaFormCard form={form} />
               </List.Item>
             ))}
           </List>
@@ -98,4 +87,4 @@ const Forms = () => {
   );
 };
 
-export default Forms;
+export default FaForms;
