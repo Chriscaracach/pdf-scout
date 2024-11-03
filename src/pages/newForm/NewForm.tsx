@@ -122,7 +122,7 @@ const NewForm = () => {
         createdAt: new Date(),
         id: uuidv4(),
       });
-      navigate("/forms");
+      navigate("/ed/forms");
     } catch (error) {
       console.error("Error submitting form: ", error);
     }

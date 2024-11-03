@@ -5,7 +5,6 @@ import { db } from "../../../firebase/config";
 import { FormValues } from "../../../interfaces/Form";
 
 const FormCard = ({ form }: { form: FormValues }) => {
-  console.log(form);
   const handleDelete = async () => {
     if (form.id) {
       try {

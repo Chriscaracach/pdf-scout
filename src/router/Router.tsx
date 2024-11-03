@@ -14,7 +14,7 @@ const Router = () => {
     { path: "/ed/forms", component: <Forms /> },
     { path: "/ed/forms/new", component: <NewForm /> },
     { path: "/fa/forms", component: <FaForms /> },
-    { path: "/fa/forms/fill", component: <FaFormsFill /> },
+    { path: "/fa/forms/fill/:formId", component: <FaFormsFill /> },
   ];
   return (
     <BrowserRouter>

@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { Button, Heading, VStack } from "rsuite";
-
 import * as Yup from "yup";
 import FormGenerator from "../../newForm/components/FormGenerator";
 import { FormField } from "../../../interfaces/Form";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Loader } from "rsuite";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../../firebase/config";
 
 type FormConfig = {
   label: string;
@@ -19,86 +21,149 @@ const forms: Record<string, FormConfig> = {
     value: "autorizacionAcampe",
     fields: [
       {
-        name: "type",
-        label: "Tipo",
-        type: "text",
-        component: "select",
-        options: [
-          { label: "Salida", value: "salida" },
-          { label: "Acantonamiento", value: "acantonamiento" },
-          { label: "Campamento", value: "campamento" },
-        ],
-        placeholder: "Tipo de acampe",
+        name: "localidad",
+        label: "Localidad",
+        component: "text",
+        placeholder: "Localidad del Joven Protagonista",
       },
       {
-        name: "startDate",
-        label: "Fecha de inicio",
-        component: "date",
-        placeholder: "Fecha de inicio del acampe",
+        name: "departamento",
+        label: "Departamento/Partido",
+        component: "text",
+        placeholder: "Departamento/Partido del Joven Protagonista",
       },
       {
-        name: "endDate",
-        label: "Fecha de fin",
-        component: "date",
+        name: "provincia",
+        label: "Provincia",
+        component: "text",
         placeholder: "Fecha de fin del acampe",
       },
       {
-        name: "location",
-        label: "Ubicación",
-        type: "text",
-        placeholder: "Ubicación del acampe",
+        name: "fecha",
+        label: "Fecha",
+        component: "date",
+        placeholder: "Fecha de llenado del formulario",
       },
       {
-        name: "gpNum",
-        label: "Número de Grupo",
-        type: "text",
-        placeholder: "Número de Grupo",
+        name: "nombreAdulto",
+        label: "Nombre del Adulto",
+        component: "text",
+        placeholder: "Nombre del Adulto",
       },
       {
-        name: "gpName",
-        label: "Nombre del Grupo",
-        type: "text",
-        placeholder: "Nombre del Grupo",
+        name: "nacionalidadAdulto",
+        label: "Nacionalidad",
+        component: "text",
+        placeholder: "Nacionalidad del Adulto",
       },
       {
-        name: "gpDist",
-        label: "Distrito del Grupo",
-        type: "text",
-        placeholder: "Distrito del Grupo",
+        name: "fechaNacAdulto",
+        label: "Fecha de Nacimiento",
+        component: "date",
+        placeholder: "Fecha de Nacimiento del Adulto",
       },
       {
-        name: "gpZone",
-        label: "Zona del Grupo",
-        type: "text",
-        placeholder: "Zona del Grupo",
+        name: "dniAdulto",
+        label: "DNI",
+        component: "text",
+        placeholder: "DNI del Adulto",
+      },
+      {
+        name: "telefonoAdulto",
+        label: "Teléfono",
+        component: "text",
+        placeholder: "Teléfono del Adulto",
+      },
+      {
+        name: "domicilioAdulto",
+        label: "Domicilio",
+        component: "text",
+        placeholder: "Domicilio del Adulto",
+      },
+      {
+        name: "rolAdulto",
+        label: "Rol",
+        component: "text",
+        placeholder: "Rol del Adulto",
+      },
+      {
+        name: "nombreJoven",
+        label: "Nombre completo",
+        component: "text",
+        placeholder: "Nombre del Joven Protagonista",
+      },
+      {
+        name: "nacionalidadJoven",
+        label: "Nacionalidad",
+        component: "text",
+        placeholder: "Nacionalidad del Joven",
+      },
+      {
+        name: "fechaNacJoven",
+        label: "Fecha de Nacimiento",
+        component: "date",
+        placeholder: "Fecha de Nacimiento del Joven",
+      },
+      {
+        name: "dniJoven",
+        label: "DNI",
+        component: "text",
+        placeholder: "DNI del Joven",
+      },
+      {
+        name: "domicilioJoven",
+        label: "Domicilio",
+        component: "text",
+        placeholder: "Domicilio del Joven",
       },
     ],
     initialValues: {
-      type: "",
-      startDate: "",
-      endDate: "",
-      location: "",
-      gpNum: "1600",
-      gpName: "Guido Buffo",
-      gpDist: "2",
+      localidad: "",
+      departamento: "",
+      provincia: "",
+      fecha: "",
+      nombreAdulto: "",
+      nacionalidadAdulto: "",
+      fechaNacAdulto: "",
+      dniAdulto: "",
+      telefonoAdulto: "",
+      domicilioAdulto: "",
+      rolAdulto: "",
+      nombreJoven: "",
+      nacionalidadJoven: "",
+      fechaNacJoven: "",
+      dniJoven: "",
+      domicilioJoven: "",
     },
     validationSchema: Yup.object().shape({
-      type: Yup.string().required("El tipo es requerido"),
-      startDate: Yup.string().required("La fecha de inicio es requerida"),
-      endDate: Yup.string().required("La fecha de fin es requerida"),
-      location: Yup.string().required("La ubicación es requerida"),
-      gpNum: Yup.string().required("El número de grupo es requerido"),
-      gpName: Yup.string().required("El nombre del grupo es requerido"),
-      gpDist: Yup.string().required("El distrito del grupo es requerido"),
-      gpZone: Yup.string().required("La zona del grupo es requerida"),
+      localidad: Yup.string().required("La localidad es requerida"),
+      departamento: Yup.string().required("El departamento es requerido"),
+      provincia: Yup.string().required("La provincia es requerida"),
+      fecha: Yup.string().required("La fecha es requerida"),
+      nombreAdulto: Yup.string().required("El nombre es requerido"),
+      nacionalidadAdulto: Yup.string().required("La nacionalidad es requerida"),
+      fechaNacAdulto: Yup.string().required(
+        "La fecha de nacimiento es requerida"
+      ),
+      dniAdulto: Yup.string().required("El DNI es requerido"),
+      telefonoAdulto: Yup.string().required("El teléfono es requerido"),
+      domicilioAdulto: Yup.string().required("El domicilio es requerido"),
+      rolAdulto: Yup.string().required("El rol es requerido"),
+      nombreJoven: Yup.string().required("El nombre es requerido"),
+      nacionalidadJoven: Yup.string().required("La nacionalidad es requerida"),
+      fechaNacJoven: Yup.string().required(
+        "La fecha de nacimiento es requerida"
+      ),
+      dniJoven: Yup.string().required("El DNI es requerido"),
+      domicilioJoven: Yup.string().required("El domicilio es requerido"),
     }),
   },
 };
 
 const FaFormsFill = () => {
-  const [step, setStep] = useState<"pickForm" | "prefillForm">("pickForm");
-  const [pickedForm, setPickedForm] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pickedForm, setPickedForm] = useState("autorizacionAcampe");
+  const { formId } = useParams<{ formId: string }>();
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
@@ -106,40 +171,40 @@ const FaFormsFill = () => {
     setLoading(false);
   };
 
-  const steps: Record<"pickForm" | "prefillForm", JSX.Element | null> = {
-    pickForm: (
-      <VStack alignItems="stretch">
-        <Heading level={5}>Seleccioná un formulario</Heading>
-        {Object.keys(forms).map((key, index) => {
-          const form = forms[key];
-          return (
-            <Button
-              key={index}
-              appearance="primary"
-              size="lg"
-              onClick={() => {
-                setPickedForm(form.value);
-                setStep("prefillForm");
-              }}
-            >
-              {form.label}
-            </Button>
-          );
-        })}
-      </VStack>
-    ),
-    prefillForm: pickedForm ? (
-      <FormGenerator
-        fields={forms[pickedForm].fields}
-        initialValues={forms[pickedForm].initialValues}
-        validationSchema={forms[pickedForm].validationSchema}
-        onSubmit={handleSubmit}
-        loading={loading}
-      />
-    ) : null,
-  };
+  useEffect(() => {
+    const fetchForm = async () => {
+      if (formId) {
+        setLoading(true);
+        try {
+          const formDoc = await getDoc(doc(db, "forms", formId));
+          if (formDoc.exists()) {
+            const formData = formDoc.data() as FormConfig;
+            setPickedForm(formData.formType);
+          } else {
+            console.error("No such document!");
+          }
+        } catch (error) {
+          console.error("Error fetching document:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
 
-  return steps[step];
+    fetchForm();
+  }, [formId]);
+
+  return loading ? (
+    <Loader />
+  ) : (
+    <FormGenerator
+      fields={forms[pickedForm].fields}
+      initialValues={forms[pickedForm].initialValues}
+      validationSchema={forms[pickedForm].validationSchema}
+      onSubmit={handleSubmit}
+      loading={loading}
+    />
+  );
 };
 
 export default FaFormsFill;

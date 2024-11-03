@@ -20,7 +20,7 @@ const Home = () => {
         size="lg"
         block
         onClick={() => {
-          Navigate("ed/forms");
+          Navigate("fa/forms");
         }}
       >
         Llenar formulario

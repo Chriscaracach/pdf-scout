@@ -1,10 +1,20 @@
 import { Stack, Text } from "rsuite";
-import { FormValues } from "../../../../interfaces/Form";
+import { Form } from "../../../../interfaces/Form";
 
-const FaFormCard = ({ form }: { form: FormValues }) => {
+interface FaFormCardProps {
+  form: Form;
+  onClick: () => void;
+}
+
+const FaFormCard = ({ form, onClick }: FaFormCardProps) => {
   return (
-    <Stack direction="column" alignItems="stretch" spacing={20}>
-      <Stack justifyContent="space-between">
+    <Stack
+      direction="column"
+      alignItems="stretch"
+      spacing={20}
+      onClick={onClick}
+    >
+      <Stack justifyContent="space-between" alignItems="flex-start">
         {form.creator?.photo && (
           <img
             src={form.creator.photo}
@@ -19,6 +29,7 @@ const FaFormCard = ({ form }: { form: FormValues }) => {
       </Stack>
       <Stack justifyContent="space-between">
         <Text>{form.formValues?.location}</Text>
+        <Text>{form.creator?.name}</Text>
       </Stack>
     </Stack>
   );

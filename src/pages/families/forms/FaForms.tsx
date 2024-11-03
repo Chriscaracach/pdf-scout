@@ -1,33 +1,21 @@
 import { initializeApp } from "firebase/app";
-import {
-  collection,
-  DocumentData,
-  getDocs,
-  getFirestore,
-} from "firebase/firestore";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Button,
-  Heading,
-  IconButton,
-  List,
-  Loader,
-  Stack,
-  VStack,
-} from "rsuite";
+import { Heading, IconButton, List, Loader, Stack, VStack } from "rsuite";
 
 import ArowBackIcon from "@rsuite/icons/ArowBack";
 
 import FaFormCard from "./components/FaFormCard";
 import { firebaseConfig } from "../../../firebase/config";
+import { Form } from "../../../interfaces/Form";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const FaForms = () => {
-  const [forms, setForms] = useState<DocumentData[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [forms, setForms] = useState<Form[]>([]);
 
   const navigate = useNavigate();
 
@@ -35,7 +23,16 @@ const FaForms = () => {
     setLoading(true);
     const formsCollection = collection(db, "forms");
     const formsSnapshot = await getDocs(formsCollection);
-    const formsList = formsSnapshot.docs.map((doc) => doc.data());
+    const formsList = formsSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        formValues: data.formValues,
+        creator: data.creator,
+        formType: data.formType,
+        createdAt: data.createdAt,
+      } as Form;
+    });
     setForms(formsList);
     setLoading(false);
   };
@@ -68,21 +65,17 @@ const FaForms = () => {
           <List bordered hover>
             {forms.map((form, index) => (
               <List.Item key={index}>
-                <FaFormCard form={form} />
+                <FaFormCard
+                  form={form}
+                  onClick={() => {
+                    navigate(`/fa/forms/fill/${form.id}`);
+                  }}
+                />
               </List.Item>
             ))}
           </List>
         )}
       </VStack>
-      <Button
-        appearance="primary"
-        size="lg"
-        onClick={() => {
-          navigate("new");
-        }}
-      >
-        Crear Formulario
-      </Button>
     </VStack>
   );
 };
